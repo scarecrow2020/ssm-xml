@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mybaits="http://mybatis.org/schema/mybatis-spring"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://mybatis.org/schema/mybatis-spring
+       http://mybatis.org/schema/mybatis-spring.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+
+    <!--自动扫描，需要排除mvc扫描的controller-->
+    <context:component-scan base-package="com.lzy.service">
+        <!-- expression为注解的限定名-->
+        <context:exclude-filter type="annotation" expression="org.springframework.web.bind.annotation.RestController"/>
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+
+    <!--本地属性文件引入，多个用逗号隔开-->
+    <context:property-placeholder location="classpath:jdbc.properties"/>
+
+    <!-- mybaits集成 -->
+    <bean id="sqlSessionFactory" class="com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean">
+        <!-- 配置数据源 -->
+        <property name="dataSource" ref="dataSource"/>
+        <!-- 配置MyBatis全局配置文件路径 -->
+        <property name="configLocation" value="classpath:spring-mybatis-config.xml"/>
+        <!-- 配置Mapper映射文件路径 -->
+        <property name="mapperLocations" value="classpath:mapper/*.xml"/>
+        <!-- pages 和total 如果是0，是因为没有配置拦截器，官网这里是一个坑（3.0.5） -->
+        <property name="plugins">
+            <list>
+                <bean class="com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor"/>
+            </list>
+        </property>
+    </bean>
+
+    <!-- 扫描Mapper接口 -->
+    <mybaits:scan base-package="com.lzy.mapper"/>
+
+    <!-- 数据源配置 -->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+        <property name="driverClassName" value="${jdbc.driverClassName}"/>
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+        <!-- 初始化连接大小 -->
+        <property name="initialSize" value="${jdbc.initialSize}"/>
+        <!-- 连接池最大使用连接数量 -->
+        <property name="maxActive" value="${jdbc.maxActive}"/>
+        <!-- 连接池最小空闲 -->
+        <property name="minIdle" value="${jdbc.minIdle}"/>
+        <!-- 获取连接最大等待时间 -->
+        <property name="maxWait" value="${jdbc.maxWait}"/>
+        <!-- 验证连接是否有效的SQL，值是一个sql语句，不同的数据配置不同。
+            如果结果为null，testOnBorrow、testOnReturn、testWhileIdle都将失效-->
+        <property name="validationQuery" value="select 1 "/>
+        <!-- 申请连接时执行validationQuery检测连接是否有效，会降低性能，但可以防止获取到无效连接-->
+        <property name="testOnBorrow" value="true"/>
+        <!-- 归还连接时执行validationQuery检测连接是否有效，会降低性能-->
+        <property name="testOnReturn" value="false"/>
+        <!-- 申请连接的时候检测，建议配置为true，不影响性能。
+            如果空闲时间大于timeBetweenEvictionRunsMillis，执行validationQuery检测连接是否有效-->
+        <property name="testWhileIdle" value="true"/>
+        <!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒。
+            如果设置为非正数，则不运行空闲连接回收器线程 -->
+        <property name="timeBetweenEvictionRunsMillis" value="60000"/>
+        <!-- 配置一个连接在池中最小生存的时间，单位是毫秒，
+            即连接池中保持空闲而不被空闲连接回收器线程回收的最小时间值-->
+        <property name="minEvictableIdleTimeMillis" value="300000"/>
+        <!-- 打开removeAbandoned功能，即对于建立时间超过removeAbandonedTimeout的连接强制关闭，生产环境建议关闭 -->
+        <property name="removeAbandoned" value="true"/>
+        <!-- 指定需要强制关闭的连接的建立时间，单位秒 -->
+        <property name="removeAbandonedTimeout" value="7200"/>
+        <!-- 强制关闭连接时输出日志 -->
+        <property name="logAbandoned" value="true"/>
+        <!-- 监控数据库 监控统计用的filter:stat、日志用的filter:log4j、防御sql注入的filter:wall-->
+        <!--<property name="filters" value="stat"/>-->
+        <!--<property name="proxyFilters">
+            <list>
+                <ref bean="druidLogFilter"/>
+            </list>
+        </property>-->
+    </bean>
+
+    <!--<bean id="druidLogFilter" class="com.alibaba.druid.filter.logging.Slf4jLogFilter">
+        <property name="connectionLogEnabled" value="false"/>
+        <property name="statementLogEnabled" value="false"/>
+        <property name="resultSetLogEnabled" value="true"/>
+        <property name="statementExecutableSqlLogEnable" value="true"/>
+    </bean>-->
+
+    <!-- 配置事务管理器 -->
+    <bean id="transactionManager"
+          class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <!-- 注解方式配置事务 -->
+    <tx:annotation-driven/>
+
+
+</beans>
