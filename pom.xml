@@ -35,12 +35,12 @@
     </plugins>
   </build>
   <dependencies>
-    <!--<dependency>-->
-      <!--<groupId>org.springframework</groupId>-->
-      <!--<artifactId>spring-core</artifactId>-->
-      <!--<version>${spring.version}</version>-->
-      <!--<scope>compile</scope>-->
-    <!--</dependency>-->
+    <!--<dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-core</artifactId>
+      <version>${spring.version}</version>
+      <scope>compile</scope>
+    </dependency>-->
     <!--<dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-context</artifactId>
@@ -136,8 +136,6 @@
       <artifactId>slf4j-api</artifactId>
       <version>1.8.0-beta2</version>
     </dependency>-->
-
-
   </dependencies>
 
 </project>

@@ -79,7 +79,7 @@
         <!-- 强制关闭连接时输出日志 -->
         <property name="logAbandoned" value="true"/>
         <!-- 监控数据库 监控统计用的filter:stat、日志用的filter:log4j、防御sql注入的filter:wall-->
-        <!--<property name="filters" value="stat"/>-->
+        <property name="filters" value="stat"/>
         <!--<property name="proxyFilters">
             <list>
                 <ref bean="druidLogFilter"/>
@@ -87,10 +87,14 @@
         </property>-->
     </bean>
 
-    <!--<bean id="druidLogFilter" class="com.alibaba.druid.filter.logging.Slf4jLogFilter">
+    <!--<bean id="druidLogFilter" class="com.alibaba.druid.filter.logging.Log4j2Filter">
+        &lt;!&ndash; 所有连接相关的日志 &ndash;&gt;
         <property name="connectionLogEnabled" value="false"/>
+        &lt;!&ndash; 所有Statement相关的日志 &ndash;&gt;
         <property name="statementLogEnabled" value="false"/>
+        &lt;!&ndash; 是否显示结果集 &ndash;&gt;
         <property name="resultSetLogEnabled" value="true"/>
+        &lt;!&ndash; 是否显示SQL语句 &ndash;&gt;
         <property name="statementExecutableSqlLogEnable" value="true"/>
     </bean>-->
 
